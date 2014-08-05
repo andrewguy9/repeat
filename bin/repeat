@@ -21,7 +21,8 @@ success_group = parser.add_mutually_exclusive_group()
 success_group.add_argument("--until-success", action='store_const', const=until_success_victory, dest="victory_condition")
 success_group.add_argument("--unless-failure", action='store_const', const=unless_failure_victory, dest="victory_condition")
 parser.add_argument("--period", default=60, type=int)
-parser.add_argument("--max-tries", default=10, type=int)
+parser.add_argument("--max-tries", default=None, type=int)
+parser.add_argument("--max-time", default=None, type=int)
 parser.add_argument("cmdargs", type=str, nargs="+")
 
 def main():
@@ -31,7 +32,7 @@ def main():
   def run_program():
     ret_val = call(args.cmdargs)
     return args.victory_condition(ret_val)
-  success = repeat(run_program, period=args.period, max_tries=args.max_tries)
+  success = repeat(run_program, period=args.period, max_tries=args.max_tries, max_time=args.max_time)
   if success:
     exit(0)
   else:
