@@ -23,6 +23,7 @@ success_group.add_argument("--unless-failure", action='store_const', const=unles
 parser.add_argument("--period", default=60, type=int)
 parser.add_argument("--max-tries", default=None, type=int)
 parser.add_argument("--max-time", default=None, type=int)
+parser.add_argument("--separator", default=None)
 parser.add_argument("cmdargs", type=str, nargs="+")
 
 def main():
@@ -31,6 +32,8 @@ def main():
     args.victory_condition = repeat_victory
   def run_program():
     ret_val = call(args.cmdargs)
+    if args.separator is not None:
+      print args.separator
     return args.victory_condition(ret_val)
   success = repeat(run_program, period=args.period, max_tries=args.max_tries, max_time=args.max_time)
   if success:
