@@ -3,6 +3,7 @@ repeat
 Program and library for repeating some action. 
 
 Program usage:
+```
 usage: repeat [-h] [--until-success | --unless-failure] [--period PERIOD]
               [--max-tries MAX_TRIES] [--max-time MAX_TIME]
               [--separator SEPARATOR]
@@ -21,3 +22,4 @@ optional arguments:
   --max-tries MAX_TRIES
   --max-time MAX_TIME
   --separator SEPARATOR
+```
