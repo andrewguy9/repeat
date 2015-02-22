@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import docopt
 from argparse import ArgumentParser
 from subprocess import call
 from repeat import repeat
+from sys import stdout
 
 # Victory functions take a command's output.
 # If the function returns true, then we should exit the repeat loop.
@@ -16,26 +18,49 @@ def unless_failure_victory(cmd_exit):
 def repeat_victory(cmd_exit):
   return False
 
-parser = ArgumentParser(description='A script to convert from one time format to another',)
-success_group = parser.add_mutually_exclusive_group()
-success_group.add_argument("--until-success", action='store_const', const=until_success_victory, dest="victory_condition")
-success_group.add_argument("--unless-failure", action='store_const', const=unless_failure_victory, dest="victory_condition")
-parser.add_argument("--period", default=60, type=int)
-parser.add_argument("--max-tries", default=None, type=int)
-parser.add_argument("--max-time", default=None, type=int)
-parser.add_argument("--separator", default=None)
-parser.add_argument("cmdargs", type=str, nargs="+")
+def convert_or_none(constructor, i):
+  if i is None:
+    return None
+  else:
+    return constructor(i)
+
+USAGE= \
+"""
+repeat - Runs command repeatedly until some condition is reached.
+
+Usage:
+    repeat [options] [--until-failure|--until-success] -- <command> [<args>...]
+
+    Options:
+
+  --period=<sleep>       Time between runs [default: 1].
+  --max-tries=<tries>
+  --max-time=<time>
+  --separator=<pattern>  Printed between runs [default: ].
+"""
 
 def main():
-  args = parser.parse_args()
-  if args.victory_condition is None:
-    args.victory_condition = repeat_victory
+  args = docopt.docopt(USAGE)
+
+  if args['--until-failure']:
+    victory_condition = unless_failure_victory
+  elif args['--until-success']:
+    victory_condition = until_success_victory
+  else:
+    victory_condition = repeat_victory
+
+  sep = args['--separator']
+  program = [args['<command>']] + args['<args>']
+  period = int(args['--period'])
+
+  max_tries = convert_or_none(int, args['--max-tries'])
+  max_time = convert_or_none(int, args['--max-time'])
+
   def run_program():
-    ret_val = call(args.cmdargs)
-    if args.separator is not None:
-      print args.separator
-    return args.victory_condition(ret_val)
-  success = repeat(run_program, period=args.period, max_tries=args.max_tries, max_time=args.max_time)
+    ret_val = call(program)
+    stdout.write(sep)
+    return victory_condition(ret_val)
+  success = repeat(run_program, period=period, max_tries=max_tries, max_time=max_time)
   if success:
     exit(0)
   else:
