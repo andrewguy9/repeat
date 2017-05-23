@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='repeat',
-      version='0.2',
+      version='0.3',
       description='retry library',
       url='http://github.com/andrewguy9/retry',
       author='andrew thomson',
