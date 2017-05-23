@@ -8,6 +8,7 @@ setup(name='repeat',
       author_email='athomsonguy@gmail.com',
       license='MIT',
       packages=['repeat'],
+      install_requires=['docopt'],
       entry_points = {
         'console_scripts': [
           'repeat = repeat.ui:main',
